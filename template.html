@@ -428,7 +428,7 @@
 
   <!-- MASTHEAD -->
   <header class="masthead">
-    <div class="masthead-date">Giovedi 26 Marzo 2026</div>
+    <div class="masthead-date">{{DATE_ITALIAN}}</div>
     <h1 class="masthead-title">La Mia Carta</h1>
     <div class="masthead-subtitle">Hermosa Beach, California</div>
     <div class="masthead-rule"></div>
@@ -436,41 +436,41 @@
 
   <!-- WEATHER BAR -->
   <div class="weather-bar">
-    <span>Hermosa Beach 15°C, prevalentemente soleggiato</span>
-    <span>Onde: 0.8–1.3m da ovest</span>
-    <span>Acqua: 19°C</span>
+    <span>{{WEATHER_HERMOSA_FULL}}</span>
+    <span>{{WEATHER_WAVES_FULL}}</span>
+    <span>Acqua: {{WEATHER_WATER}}</span>
   </div>
 
   <!-- MERCATI -->
   <section class="section">
     <div class="section-label">Mercati</div>
     <div class="section-body">
-      <p>Oggi i mercati americani scendono: l'S&P 500 è a 6.477 (-1,74%), il Nasdaq a 21.408 (-2,38%), e il Bitcoin a 68.563 dollari (-3,85%).</p>
+      {{MERCATI_INTRO}}
     </div>
     <div class="markets-grid">
       <div class="market-card">
         <div class="market-name">S&amp;P 500</div>
-        <div class="market-value">6,477</div>
-        <div class="market-change down">-1.74%</div>
-        <div class="market-context">S&P 500 in calo oggi</div>
+        <div class="market-value">{{SP500_VALUE}}</div>
+        <div class="market-change {{SP500_CLASS}}">{{SP500_CHANGE}}</div>
+        <div class="market-context">{{SP500_CONTEXT}}</div>
       </div>
       <div class="market-card">
         <div class="market-name">Nasdaq</div>
-        <div class="market-value">21,408</div>
-        <div class="market-change down">-2.38%</div>
-        <div class="market-context">Nasdaq perde terreno</div>
+        <div class="market-value">{{NASDAQ_VALUE}}</div>
+        <div class="market-change {{NASDAQ_CLASS}}">{{NASDAQ_CHANGE}}</div>
+        <div class="market-context">{{NASDAQ_CONTEXT}}</div>
       </div>
       <div class="market-card">
         <div class="market-name">Bitcoin</div>
-        <div class="market-value">$68,563</div>
-        <div class="market-change down">-3.85%</div>
-        <div class="market-context">Bitcoin scende ancora</div>
+        <div class="market-value">{{BTC_VALUE}}</div>
+        <div class="market-change {{BTC_CLASS}}">{{BTC_CHANGE}}</div>
+        <div class="market-context">{{BTC_CONTEXT}}</div>
       </div>
       <div class="market-card">
         <div class="market-name">EUR/USD</div>
-        <div class="market-value">1.1546</div>
-        <div class="market-change down">-0.13%</div>
-        <div class="market-context">Euro stabile sul dollaro</div>
+        <div class="market-value">{{EURUSD_VALUE}}</div>
+        <div class="market-change {{EURUSD_CLASS}}">{{EURUSD_CHANGE}}</div>
+        <div class="market-context">{{EURUSD_CONTEXT}}</div>
       </div>
     </div>
   </section>
@@ -478,23 +478,20 @@
   <!-- PORTOGALLO -->
   <section class="section">
     <div class="section-label">Portogallo</div>
-    <div class="portugal-status">
-      <span class="portugal-check">&#10003;</span>
-      Niente di importante oggi. Tutto tranquillo.
-    </div>
+    {{PORTOGALLO_STATUS_HTML}}
     <div class="section-body">
-      <p>A Lisbona oggi il sole splende e la temperatura è di 14°C — una bella giornata di primavera. La città è tranquilla, i caffè sul Tago sono aperti e la vita scorre con calma.</p>
+      {{PORTOGALLO_BODY}}
     </div>
   </section>
 
   <!-- AI & STRUMENTI -->
   <section class="section">
     <div class="section-label">AI e Strumenti</div>
-    <div class="section-headline">Un giudice blocca il Pentagono contro Anthropic</div>
+    <div class="section-headline">{{AI_HEADLINE}}</div>
     <div class="section-body">
-      <p>Un giudice americano ha dato ragione ad Anthropic e ha bloccato temporaneamente una decisione del Pentagono contro l'azienda. Anthropic ha lottato per settimane contro questo divieto. La decisione del giudice è una vittoria importante per la società di intelligenza artificiale.</p><p>Nel mondo della tecnologia ci sono anche altre notizie. David Sacks ha lasciato il suo ruolo di responsabile dell'intelligenza artificiale e delle criptovalute alla Casa Bianca. Inoltre, Apple ha rimosso il suo <span class='parola'>portatile<span class='parola-tooltip'>portatile = laptop/portable computer</span></span> più costoso, il Mac Pro, dal suo sito ufficiale.</p>
+      {{AI_BODY}}
     </div>
-    <div class="section-source">via The Verge, Hacker News</div>
+    <div class="section-source">{{AI_SOURCE}}</div>
   </section>
 
   <!-- TWO COLUMN: CUCINA + SURF -->
@@ -502,16 +499,16 @@
     <section class="section">
       <div class="section-label">Cucina</div>
       <div class="recipe-card">
-        <div class="recipe-title">Pasta e fagioli</div>
-        <div class="recipe-body">Allora, prima di tutto prendi i fagioli borlotti — se puoi, usali secchi e mettili in acqua la sera prima. In una pentola grande, soffriggi aglio e rosmarino nell'olio d'oliva, poi aggiungi i fagioli e copri tutto con acqua o brodo. Quando i fagioli sono morbidi, schiaccia un po' con il cucchiaio per fare la crema, poi butta la pasta corta direttamente nella pentola. Servi caldo con un filo d'olio buono sopra — mia nonna diceva sempre che questo piatto scalda il cuore.</div>
+        <div class="recipe-title">{{CUCINA_TITLE}}</div>
+        <div class="recipe-body">{{CUCINA_BODY}}</div>
       </div>
     </section>
 
     <section class="section">
       <div class="section-label">Mare e Onde</div>
-      <div class="section-headline">Onde piccole a Hermosa Beach questo giovedì</div>
+      <div class="section-headline">{{SURF_HEADLINE}}</div>
       <div class="section-body">
-        <p>Oggi a El Porto le onde arrivano da ovest con un'altezza di 0,8-1,3 metri e un periodo di 9 secondi. L'acqua è a 19°C — non fredda per marzo. Le condizioni sono adatte ai principianti; il momento migliore per entrare in acqua è la mattina presto, quando il vento è ancora calmo.</p>
+        {{SURF_BODY}}
       </div>
     </section>
   </div>
@@ -520,17 +517,17 @@
   <div class="two-col divider-row">
     <section class="section">
       <div class="section-label">Viaggio</div>
-      <div class="section-headline">Matera: la città dei sassi ti sorprende sempre</div>
+      <div class="section-headline">{{VIAGGIO_HEADLINE}}</div>
       <div class="section-body">
-        <p>Matera, in Basilicata, è una delle città più antiche del mondo e ancora oggi sorprende i visitatori con le sue case scavate nella roccia, i cosiddetti 'Sassi'. Le strade strette e silenziose portano a chiese rupestri e panorami mozzafiato. È una destinazione perfetta per chi vuole scoprire un'Italia lontana dai percorsi più affollati.</p>
+        {{VIAGGIO_BODY}}
       </div>
     </section>
 
     <section class="section">
       <div class="section-label">Design e Architettura</div>
-      <div class="section-headline">Una scuola d'arte a Quito ispira al Corbusier</div>
+      <div class="section-headline">{{DESIGN_HEADLINE}}</div>
       <div class="section-body">
-        <p>Lo studio Studio Blur ha progettato un nuovo edificio per il dipartimento di arti visive di una scuola a Quito, in Ecuador. La struttura è in cemento e ha un tetto a denti di sega, ispirato alle case di Le Corbusier. Il progetto unisce la tradizione architettonica moderna con le esigenze locali della città sudamericana.</p>
+        {{DESIGN_BODY}}
       </div>
     </section>
   </div>
@@ -538,20 +535,20 @@
   <!-- MUSICA E CULTURA -->
   <section class="section">
     <div class="section-label">Musica e Cultura</div>
-    <div class="section-headline">La canzone napoletana vive ancora nei vicoli</div>
+    <div class="section-headline">{{MUSICA_HEADLINE}}</div>
     <div class="section-body">
-      <p>A Napoli, la musica tradizionale non è solo un ricordo del passato: ogni sera, nei vicoli del centro storico, qualcuno canta 'O sole mio' o 'Funiculì Funiculà'. I giovani musicisti napoletani mescolano queste melodie antiche con suoni moderni, e il risultato è fresco e pieno di energia. La tradizione musicale partenopea è viva e continua a emozionare il mondo.</p>
+      {{MUSICA_BODY}}
     </div>
   </section>
 
   <!-- STORIE UMANE -->
   <section class="section">
     <div class="section-label">Storie</div>
-    <div class="section-headline large">Il sindaco di Genova parla: le parole sullo yacht fanno rumore</div>
+    <div class="section-headline large">{{STORIE_HEADLINE}}</div>
     <div class="section-body">
-      <p>Marco Bucci, sindaco di Genova, è stanco e arrabbiato. Le sue conversazioni private, registrate dalle intercettazioni, sono ora sui giornali di tutta Italia. In una di queste parla di 'gioco al massacro' e chiede chiarezza sulla sua posizione. Il porto di Genova, il simbolo della città, è al centro di una storia complicata di favori e incontri riservati.</p><p>Secondo i magistrati, su una barca privata si sono incontrate persone importanti — e i telefoni sono rimasti fuori, per non lasciare tracce. Il caso coinvolge anche l'ex governatore ligure Giovanni Toti, accusato di aver manipolato i dati Covid. Genova guarda e aspetta.</p>
+      {{STORIE_BODY}}
     </div>
-    <div class="section-source">via Corriere della Sera</div>
+    <div class="section-source">{{STORIE_SOURCE}}</div>
   </section>
 
   <!-- CRUCIVERBA -->
@@ -561,72 +558,13 @@
       <p>Le parole di oggi vengono dagli articoli sopra.</p>
     </div>
 
-    <div class="crossword-grid" style="grid-template-columns: repeat(7, 36px);">
-  <!-- Row 1 -->
-  <div class="crossword-cell"><span class="cell-number">1</span><input maxlength="1" data-row="0" data-col="0"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="1"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="2"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="3"></div>
-  <div class="crossword-cell black"></div>
-  <div class="crossword-cell"><span class="cell-number">2</span><input maxlength="1" data-row="0" data-col="5"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="6"></div>
-  <!-- Row 2 -->
-  <div class="crossword-cell"><input maxlength="1" data-row="1" data-col="0"></div>
-  <div class="crossword-cell black"></div>
-  <div class="crossword-cell"><span class="cell-number">3</span><input maxlength="1" data-row="1" data-col="2"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="1" data-col="3"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="1" data-col="4"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="1" data-col="5"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="1" data-col="6"></div>
-  <!-- Row 3 -->
-  <div class="crossword-cell"><span class="cell-number">4</span><input maxlength="1" data-row="2" data-col="0"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="1"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="2"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="3"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="4"></div>
-  <div class="crossword-cell black"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="6"></div>
-  <!-- Row 4 -->
-  <div class="crossword-cell"><input maxlength="1" data-row="3" data-col="0"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="3" data-col="1"></div>
-  <div class="crossword-cell black"></div>
-  <div class="crossword-cell"><span class="cell-number">5</span><input maxlength="1" data-row="3" data-col="3"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="3" data-col="4"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="3" data-col="5"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="3" data-col="6"></div>
-  <!-- Row 5 -->
-  <div class="crossword-cell black"></div>
-  <div class="crossword-cell"><span class="cell-number">6</span><input maxlength="1" data-row="4" data-col="1"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="4" data-col="2"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="4" data-col="3"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="4" data-col="4"></div>
-  <div class="crossword-cell"><input maxlength="1" data-row="4" data-col="5"></div>
-  <div class="crossword-cell black"></div>
-</div>
-<div class="crossword-clues">
-  <div>
-    <div class="clue-group-title">Orizzontali</div>
-    <div class="clue"><strong>1.</strong> Il mare lo fa ogni giorno sulle rocce (4 lettere) (4 lettere)</div>
-    <div class="clue"><strong>2.</strong> Opposto di notte (2 lettere) (2 lettere)</div>
-    <div class="clue"><strong>3.</strong> Si usa per navigare in rete (3 lettere, abbreviazione comune) (5 lettere)</div>
-    <div class="clue"><strong>4.</strong> Piatto di pasta con legumi, tipico della cucina italiana (5 lettere) (5 lettere)</div>
-    <div class="clue"><strong>5.</strong> Città del Sud Italia famosa per i Sassi (6 lettere) (4 lettere)</div>
-    <div class="clue"><strong>6.</strong> Moneta americana (6 lettere) (5 lettere)</div>
-  </div>
-  <div>
-    <div class="clue-group-title">Verticali</div>
-    <div class="clue"><strong>1.</strong> Movimento del mare, grande o piccola (4 lettere) (4 lettere)</div>
-    <div class="clue"><strong>2.</strong> Direzione del sole al mattino (3 lettere) (3 lettere)</div>
-    <div class="clue"><strong>3.</strong> Strumento per cucinare, sul fuoco (6 lettere) (5 lettere)</div>
-    <div class="clue"><strong>5.</strong> Metallo prezioso, simbolo XAU (3 lettere) (3 lettere)</div>
-  </div>
-</div>
+    {{CROSSWORD_HTML}}
   </section>
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div class="footer-quote">Il sole è nuovo ogni giorno.</div>
-    <div class="footer-text">La Mia Carta &middot; Edizione del 26 Marzo 2026</div>
+    <div class="footer-quote">{{FOOTER_QUOTE}}</div>
+    <div class="footer-text">La Mia Carta &middot; Edizione del {{FOOTER_DATE}}</div>
   </footer>
 
 </div>

@@ -1,0 +1,82 @@
+name: La Mia Carta — Edizione Quotidiana
+
+on:
+  schedule:
+    # 6am PDT (UTC-7) = 13:00 UTC — runs year-round at this time
+    # During PST (winter) this fires at 5am; adjust to 14:00 UTC if preferred
+    - cron: '0 13 * * *'
+  workflow_dispatch:  # allow manual run from Actions tab
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed to push index.html back to main
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate today's newspaper
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python generate.py
+
+      - name: Commit and push index.html
+        run: |
+          git config user.name "La Mia Carta Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          # Only commit if index.html actually changed
+          if git diff --staged --quiet; then
+            echo "No changes to index.html — skipping commit"
+          else
+            DATE_LABEL=$(python -c "
+          import datetime
+          months = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+                    'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
+          d = datetime.date.today()
+          print(f'{d.day} {months[d.month-1]} {d.year}')
+          ")
+            git commit -m "Edizione del ${DATE_LABEL}"
+            git push
+          fi
+
+      - name: Send Telegram notification
+        # Runs only if TELEGRAM_BOT_TOKEN secret is set
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets not configured — skipping notification"
+            exit 0
+          fi
+
+          DATE_IT=$(python -c "
+          import datetime
+          days = ['Lunedi','Martedi','Mercoledi','Giovedi','Venerdi','Sabato','Domenica']
+          months = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+                    'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
+          d = datetime.date.today()
+          print(f\"{days[d.weekday()]} {d.day} {months[d.month-1]}\")
+          ")
+
+          MESSAGE="La Mia Carta — ${DATE_IT}
+          https://flavr57.github.io/La-Mia-Carta"
+
+          curl -s -X POST \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" \
+            -o /dev/null
+          echo "Telegram notification sent"
