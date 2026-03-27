@@ -100,6 +100,27 @@
     gap: 6px;
   }
 
+  /* ---- ACCADDE OGGI ---- */
+  .accadde-oggi {
+    background: var(--paper-dark);
+    border-bottom: 1px solid var(--rule);
+    padding: 16px 0;
+  }
+
+  .accadde-oggi .section-label {
+    margin-bottom: 6px;
+  }
+
+  .accadde-oggi .section-body {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-light);
+  }
+
+  .accadde-oggi .section-body p {
+    margin-bottom: 0;
+  }
+
   /* ---- SECTIONS ---- */
   .section {
     padding: 32px 0 28px;
@@ -153,6 +174,25 @@
     color: var(--ink-faint);
     margin-top: 10px;
     letter-spacing: 0.5px;
+  }
+
+  .section-source a {
+    color: var(--ink-faint);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--rule);
+    transition: color 0.15s;
+  }
+
+  .section-source a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ---- ARTICLE SEPARATOR ---- */
+  .article-separator {
+    border: none;
+    border-top: 1px dashed var(--rule-light);
+    margin: 24px 0;
   }
 
   /* ---- MARKETS ---- */
@@ -364,6 +404,104 @@
     font-weight: 600;
   }
 
+  /* ---- ANAGRAM ---- */
+  .anagram-puzzle {
+    margin: 16px 0;
+  }
+
+  .anagram-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .anagram-scrambled {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--accent);
+    min-width: 120px;
+  }
+
+  .anagram-input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 1.5px solid var(--rule);
+    border-radius: 4px;
+    padding: 7px 12px;
+    background: white;
+    color: var(--ink);
+    width: 160px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .anagram-input:focus {
+    border-color: var(--accent);
+  }
+
+  .anagram-input.correct-answer {
+    border-color: var(--green-subtle);
+    background: #f0f7f3;
+  }
+
+  .anagram-result {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 80px;
+  }
+
+  .anagram-result.correct { color: var(--green-subtle); }
+  .anagram-result.wrong { color: var(--red-subtle); }
+
+  .anagram-btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+
+  .anagram-check-btn,
+  .anagram-reveal-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .anagram-check-btn {
+    background: var(--accent);
+    color: white;
+  }
+
+  .anagram-check-btn:hover {
+    background: var(--accent-soft);
+  }
+
+  .anagram-reveal-btn {
+    background: transparent;
+    color: var(--ink-faint);
+    border: 1px solid var(--rule);
+  }
+
+  .anagram-reveal-btn:hover {
+    color: var(--ink);
+    border-color: var(--ink-light);
+  }
+
   /* ---- FOOTER ---- */
   .footer {
     text-align: center;
@@ -441,6 +579,14 @@
     <span>Acqua: {{WEATHER_WATER}}</span>
   </div>
 
+  <!-- ACCADDE OGGI -->
+  <div class="accadde-oggi">
+    <div class="container">
+      <div class="section-label">Accadde Oggi</div>
+      <div class="section-body">{{ACCADDE_OGGI}}</div>
+    </div>
+  </div>
+
   <!-- MERCATI -->
   <section class="section">
     <div class="section-label">Mercati</div>
@@ -488,10 +634,14 @@
   <section class="section">
     <div class="section-label">AI e Strumenti</div>
     <div class="section-headline">{{AI_HEADLINE}}</div>
-    <div class="section-body">
-      {{AI_BODY}}
-    </div>
-    <div class="section-source">{{AI_SOURCE}}</div>
+    <div class="section-body">{{AI_BODY}}</div>
+    {{AI_SOURCE_HTML}}
+
+    <hr class="article-separator">
+
+    <div class="section-headline">{{AI_HEADLINE_2}}</div>
+    <div class="section-body">{{AI_BODY_2}}</div>
+    {{AI_SOURCE_HTML_2}}
   </section>
 
   <!-- TWO COLUMN: CUCINA + SURF -->
@@ -518,17 +668,27 @@
     <section class="section">
       <div class="section-label">Viaggio</div>
       <div class="section-headline">{{VIAGGIO_HEADLINE}}</div>
-      <div class="section-body">
-        {{VIAGGIO_BODY}}
-      </div>
+      <div class="section-body">{{VIAGGIO_BODY}}</div>
+      {{VIAGGIO_SOURCE_HTML}}
+
+      <hr class="article-separator">
+
+      <div class="section-headline">{{VIAGGIO_HEADLINE_2}}</div>
+      <div class="section-body">{{VIAGGIO_BODY_2}}</div>
+      {{VIAGGIO_SOURCE_HTML_2}}
     </section>
 
     <section class="section">
       <div class="section-label">Design e Architettura</div>
       <div class="section-headline">{{DESIGN_HEADLINE}}</div>
-      <div class="section-body">
-        {{DESIGN_BODY}}
-      </div>
+      <div class="section-body">{{DESIGN_BODY}}</div>
+      {{DESIGN_SOURCE_HTML}}
+
+      <hr class="article-separator">
+
+      <div class="section-headline">{{DESIGN_HEADLINE_2}}</div>
+      <div class="section-body">{{DESIGN_BODY_2}}</div>
+      {{DESIGN_SOURCE_HTML_2}}
     </section>
   </div>
 
@@ -536,29 +696,46 @@
   <section class="section">
     <div class="section-label">Musica e Cultura</div>
     <div class="section-headline">{{MUSICA_HEADLINE}}</div>
-    <div class="section-body">
-      {{MUSICA_BODY}}
-    </div>
+    <div class="section-body">{{MUSICA_BODY}}</div>
+    {{MUSICA_SOURCE_HTML}}
+
+    <hr class="article-separator">
+
+    <div class="section-headline">{{MUSICA_HEADLINE_2}}</div>
+    <div class="section-body">{{MUSICA_BODY_2}}</div>
+    {{MUSICA_SOURCE_HTML_2}}
   </section>
 
   <!-- STORIE UMANE -->
   <section class="section">
     <div class="section-label">Storie</div>
     <div class="section-headline large">{{STORIE_HEADLINE}}</div>
-    <div class="section-body">
-      {{STORIE_BODY}}
-    </div>
-    <div class="section-source">{{STORIE_SOURCE}}</div>
+    <div class="section-body">{{STORIE_BODY}}</div>
+    {{STORIE_SOURCE_HTML}}
+
+    <hr class="article-separator">
+
+    <div class="section-headline large">{{STORIE_HEADLINE_2}}</div>
+    <div class="section-body">{{STORIE_BODY_2}}</div>
+    {{STORIE_SOURCE_HTML_2}}
   </section>
 
   <!-- CRUCIVERBA -->
   <section class="section">
     <div class="section-label">Cruciverba del Giorno</div>
     <div class="section-body" style="margin-bottom: 12px;">
-      <p>Le parole di oggi vengono dagli articoli sopra.</p>
+      <p>Parole semplici per iniziare bene la giornata.</p>
     </div>
-
     {{CROSSWORD_HTML}}
+  </section>
+
+  <!-- ANAGRAMMA -->
+  <section class="section">
+    <div class="section-label">Anagramma</div>
+    <div class="section-body" style="margin-bottom: 16px;">
+      <p>Trova le parole nascoste — sono tutte parole di oggi.</p>
+    </div>
+    {{ANAGRAM_HTML}}
   </section>
 
   <!-- FOOTER -->
@@ -570,7 +747,7 @@
 </div>
 
 <script>
-  // Crossword navigation: auto-advance to next cell on input
+  // ── Crossword navigation ──────────────────────────────────────────────────
   document.querySelectorAll('.crossword-cell input').forEach(input => {
     input.addEventListener('input', (e) => {
       if (e.target.value.length === 1) {
@@ -601,6 +778,44 @@
           }
         }
       }
+    });
+  });
+
+  // ── Anagram game ──────────────────────────────────────────────────────────
+  function checkAnagrams() {
+    document.querySelectorAll('.anagram-item').forEach(item => {
+      const input = item.querySelector('.anagram-input');
+      const result = item.querySelector('.anagram-result');
+      const answer = input.dataset.answer;
+      if (!input.value) return;
+      if (input.value.toUpperCase() === answer.toUpperCase()) {
+        result.textContent = '✓ Bravo!';
+        result.className = 'anagram-result correct';
+        input.classList.add('correct-answer');
+      } else {
+        result.textContent = '✗ Riprova';
+        result.className = 'anagram-result wrong';
+        input.classList.remove('correct-answer');
+      }
+    });
+  }
+
+  function revealAnagrams() {
+    document.querySelectorAll('.anagram-item').forEach(item => {
+      const input = item.querySelector('.anagram-input');
+      const result = item.querySelector('.anagram-result');
+      const answer = input.dataset.answer;
+      input.value = answer;
+      result.textContent = '✓ Soluzione';
+      result.className = 'anagram-result correct';
+      input.classList.add('correct-answer');
+    });
+  }
+
+  // Allow Enter key to trigger check
+  document.querySelectorAll('.anagram-input').forEach(input => {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkAnagrams();
     });
   });
 </script>
