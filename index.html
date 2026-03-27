@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Mia Carta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f0e8;
+    --paper-dark: #ebe4d6;
+    --ink: #1a1a18;
+    --ink-light: #5a574e;
+    --ink-faint: #8a8780;
+    --rule: #c8c0b0;
+    --rule-light: #d8d2c4;
+    --accent: #8b4513;
+    --accent-soft: #a0522d;
+    --section-bg: #faf7f2;
+    --green-subtle: #3d6b4f;
+    --red-subtle: #8b3a3a;
+    --blue-subtle: #3a5a8b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---- MASTHEAD ---- */
+  .masthead {
+    text-align: center;
+    padding: 40px 0 20px;
+    border-bottom: 3px double var(--rule);
+  }
+
+  .masthead-date {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+
+  .masthead-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(42px, 10vw, 72px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .masthead-subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 6px;
+  }
+
+  .masthead-rule {
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    margin: 14px auto 0;
+  }
+
+  /* ---- WEATHER BAR ---- */
+  .weather-bar {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-light);
+  }
+
+  .weather-bar span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ---- SECTIONS ---- */
+  .section {
+    padding: 32px 0 28px;
+    border-bottom: 1px solid var(--rule-light);
+  }
+
+  .section:last-child {
+    border-bottom: none;
+  }
+
+  .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .section-headline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .section-headline.large {
+    font-size: 34px;
+  }
+
+  .section-body {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--ink-light);
+  }
+
+  .section-body p {
+    margin-bottom: 12px;
+  }
+
+  .section-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-source {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ---- MARKETS ---- */
+  .markets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .market-card {
+    background: var(--section-bg);
+    border: 1px solid var(--rule-light);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+
+  .market-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 4px;
+  }
+
+  .market-value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .market-change {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .market-change.up { color: var(--green-subtle); }
+  .market-change.down { color: var(--red-subtle); }
+
+  .market-context {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* ---- PORTUGAL WATCH ---- */
+  .portugal-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--section-bg);
+    border: 1px solid var(--rule-light);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 14px;
+  }
+
+  .portugal-check {
+    color: var(--green-subtle);
+    font-size: 16px;
+  }
+
+  /* ---- TWO COLUMN ---- */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; gap: 0; }
+    .two-col .section { padding: 24px 0; }
+  }
+
+  .two-col .section {
+    border-bottom: none;
+    padding: 0;
+  }
+
+  .divider-row {
+    border-bottom: 1px solid var(--rule-light);
+    padding-bottom: 28px;
+    margin-bottom: 0;
+  }
+
+  /* ---- RECIPE CARD ---- */
+  .recipe-card {
+    background: var(--section-bg);
+    border: 1px solid var(--rule-light);
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 12px;
+  }
+
+  .recipe-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .recipe-body {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--ink-light);
+  }
+
+  /* ---- CROSSWORD ---- */
+  .crossword-grid {
+    display: inline-grid;
+    gap: 2px;
+    margin: 16px 0;
+  }
+
+  .crossword-cell {
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: 1.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .crossword-cell.black {
+    background: var(--ink);
+    border-color: var(--ink);
+    cursor: default;
+  }
+
+  .crossword-cell .cell-number {
+    position: absolute;
+    top: 1px;
+    left: 3px;
+    font-size: 8px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    line-height: 1;
+  }
+
+  .crossword-cell input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: uppercase;
+    outline: none;
+    caret-color: var(--accent);
+  }
+
+  .crossword-cell:focus-within {
+    background: #f0e8d8;
+  }
+
+  .crossword-clues {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 500px) {
+    .crossword-clues { grid-template-columns: 1fr; }
+  }
+
+  .clue-group-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .clue {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+
+  .clue strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    text-align: center;
+    padding: 32px 0 48px;
+    border-top: 3px double var(--rule);
+    margin-top: 12px;
+  }
+
+  .footer-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .footer-quote {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-light);
+    margin-bottom: 12px;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ---- WORD HIGHLIGHT (subtle) ---- */
+  .parola {
+    border-bottom: 1px dotted var(--accent-soft);
+    cursor: help;
+  }
+
+  .parola-tooltip {
+    display: none;
+    position: absolute;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10;
+    transform: translateY(-110%);
+  }
+
+  .parola:hover .parola-tooltip,
+  .parola:active .parola-tooltip {
+    display: block;
+  }
+
+  .parola {
+    position: relative;
+    display: inline;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="masthead-date">Mercoledi 26 Marzo 2026</div>
+    <h1 class="masthead-title">La Mia Carta</h1>
+    <div class="masthead-subtitle">Hermosa Beach, California</div>
+    <div class="masthead-rule"></div>
+  </header>
+
+  <!-- WEATHER BAR -->
+  <div class="weather-bar">
+    <span>Hermosa Beach 18°C, soleggiato</span>
+    <span>Onde: 1-1.5m da ovest</span>
+    <span>Acqua: 15°C</span>
+  </div>
+
+  <!-- MERCATI -->
+  <section class="section">
+    <div class="section-label">Mercati</div>
+    <div class="section-body">
+      <p>I mercati americani hanno chiuso in rialzo ieri. Gli investitori aspettano i dati sull'occupazione di venerdi.</p>
+    </div>
+    <div class="markets-grid">
+      <div class="market-card">
+        <div class="market-name">S&P 500</div>
+        <div class="market-value">5,812</div>
+        <div class="market-change up">+0.42%</div>
+        <div class="market-context">Terzo giorno positivo</div>
+      </div>
+      <div class="market-card">
+        <div class="market-name">Nasdaq</div>
+        <div class="market-value">18,240</div>
+        <div class="market-change up">+0.68%</div>
+        <div class="market-context">Tech forte questa settimana</div>
+      </div>
+      <div class="market-card">
+        <div class="market-name">Bitcoin</div>
+        <div class="market-value">$87,450</div>
+        <div class="market-change down">-1.2%</div>
+        <div class="market-context">Consolidamento dopo il picco</div>
+      </div>
+      <div class="market-card">
+        <div class="market-name">EUR/USD</div>
+        <div class="market-value">1.0834</div>
+        <div class="market-change up">+0.15%</div>
+        <div class="market-context">Euro stabile</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTOGALLO -->
+  <section class="section">
+    <div class="section-label">Portogallo</div>
+    <div class="portugal-status">
+      <span class="portugal-check">&#10003;</span>
+      Niente di importante oggi. Tutto tranquillo.
+    </div>
+    <div class="section-body">
+      <p>Il tempo a Lisbona e mite, 20 gradi con sole. Il governo portoghese ha annunciato nuovi investimenti nel settore tecnologico, buone notizie per il mercato del lavoro locale.</p>
+    </div>
+  </section>
+
+  <!-- AI & STRUMENTI -->
+  <section class="section">
+    <div class="section-label">AI e Strumenti</div>
+    <div class="section-headline">Anthropic lancia nuove funzioni per Claude Code</div>
+    <div class="section-body">
+      <p>La nuova versione include la possibilita di <span class="parola">eseguire<span class="parola-tooltip">eseguire = to execute, to run</span></span> automazioni piu complesse direttamente dal terminale. Per chi lavora da solo, questo significa meno tempo nella configurazione e piu tempo nel lavoro creativo.</p>
+      <p>Da tenere d'occhio anche: un nuovo strumento open source per creare siti web da file markdown in pochi minuti. Si chiama Zola e funziona bene con GitHub Pages.</p>
+    </div>
+    <div class="section-source">via The Verge, Hacker News</div>
+  </section>
+
+  <!-- TWO COLUMN: CUCINA + SURF -->
+  <div class="two-col divider-row">
+    <section class="section">
+      <div class="section-label">Cucina</div>
+      <div class="recipe-card">
+        <div class="recipe-title">Pasta e Fagioli alla Napoletana</div>
+        <div class="recipe-body">
+          Un piatto semplice della tradizione campana. Fagioli borlotti cotti lentamente con sedano, carote e un pezzo di parmigiano. La pasta corta, come i ditalini, si aggiunge alla fine e cuoce direttamente nel brodo. Si serve con olio buono e pepe nero. Il segreto e la pazienza: cucinare lentamente rende tutto migliore.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-label">Mare e Onde</div>
+      <div class="section-headline">Swell da ovest in arrivo</div>
+      <div class="section-body">
+        <p>Le previsioni mostrano un nuovo swell da ovest che arriva giovedi sera. Potrebbe portare onde di 1.5-2 metri per il fine settimana a El Porto e Hermosa. Vento leggero al mattino, condizioni migliori prima delle 10.</p>
+        <p>In Australia, la stagione delle onde grandi continua con sessioni incredibili a Shipstern Bluff.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- TWO COLUMN: VIAGGIO + DESIGN -->
+  <div class="two-col divider-row">
+    <section class="section">
+      <div class="section-label">Viaggio</div>
+      <div class="section-headline">Cinque Terre senza turisti</div>
+      <div class="section-body">
+        <p>Un articolo racconta come visitare le Cinque Terre in bassa stagione. Novembre e marzo sono i mesi migliori: prezzi bassi, sentieri vuoti, e i colori dell'autunno o della primavera sui vigneti. Il treno locale costa poco e collega tutti i cinque villaggi.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-label">Design e Architettura</div>
+      <div class="section-headline">Il ritorno del brutalismo dolce</div>
+      <div class="section-body">
+        <p>Una nuova generazione di architetti usa il cemento in modo diverso: forme morbide, colori caldi, integrazione con la natura. Un progetto a Maiorca ha trasformato un vecchio magazzino in uno studio creativo con pareti curve e luce naturale ovunque.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- MUSICA E CULTURA -->
+  <section class="section">
+    <div class="section-label">Musica e Cultura</div>
+    <div class="section-headline">Il jazz torna nelle piazze italiane</div>
+    <div class="section-body">
+      <p>Con l'arrivo della primavera, molte citta italiane organizzano concerti gratuiti nelle piazze. Umbria Jazz annuncia il programma estivo con artisti internazionali. A Roma, il quartiere Trastevere ospita serate di musica dal vivo ogni venerdi sera nei bar lungo il fiume. Una tradizione che resiste al tempo.</p>
+    </div>
+  </section>
+
+  <!-- STORIE UMANE -->
+  <section class="section">
+    <div class="section-label">Storie</div>
+    <div class="section-headline large">Il falegname di Positano che costruisce barche a 82 anni</div>
+    <div class="section-body">
+      <p>Si chiama Antonio e ogni mattina scende nel suo laboratorio vicino al mare. Costruisce barche di legno da quando aveva quattordici anni. I suoi figli lavorano in citta ma lui preferisce restare qui, dove il suono del legno e delle onde si mescolano. "Non e lavoro," dice, "e la mia vita." Le sue barche sono conosciute in tutta la costiera. Ogni barca ha un nome, di solito il nome di una donna della sua famiglia.</p>
+    </div>
+    <div class="section-source">via Corriere della Sera</div>
+  </section>
+
+  <!-- CRUCIVERBA -->
+  <section class="section">
+    <div class="section-label">Cruciverba del Giorno</div>
+    <div class="section-body" style="margin-bottom: 12px;">
+      <p>Le parole di oggi vengono dagli articoli sopra.</p>
+    </div>
+
+    <div class="crossword-grid" style="grid-template-columns: repeat(7, 36px);">
+      <!-- Row 1 -->
+      <div class="crossword-cell"><span class="cell-number">1</span><input maxlength="1" data-row="0" data-col="0"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="1"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="2"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="3"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="4"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="5"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="0" data-col="6"></div>
+      <!-- Row 2 -->
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="1" data-col="2"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <!-- Row 3 -->
+      <div class="crossword-cell"><span class="cell-number">2</span><input maxlength="1" data-row="2" data-col="0"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="1"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="2"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="3"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="2" data-col="4"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <!-- Row 4 -->
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="3" data-col="2"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <!-- Row 5 -->
+      <div class="crossword-cell"><span class="cell-number">3</span><input maxlength="1" data-row="4" data-col="0"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="4" data-col="1"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="4" data-col="2"></div>
+      <div class="crossword-cell"><input maxlength="1" data-row="4" data-col="3"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+      <div class="crossword-cell black"></div>
+    </div>
+
+    <div class="crossword-clues">
+      <div>
+        <div class="clue-group-title">Orizzontali</div>
+        <div class="clue"><strong>1.</strong> Il materiale delle barche di Antonio (6 lettere)</div>
+        <div class="clue"><strong>2.</strong> Si cucinano con la pasta alla napoletana (7 lettere)</div>
+        <div class="clue"><strong>3.</strong> Le previsioni le portano da ovest (4 lettere)</div>
+      </div>
+      <div>
+        <div class="clue-group-title">Verticali</div>
+        <div class="clue"><strong>1.</strong> Il mese migliore per le Cinque Terre senza gente (5 lettere)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-quote">"La semplicita e la raffinatezza suprema."</div>
+    <div class="footer-text">La Mia Carta &middot; Edizione del 26 Marzo 2026</div>
+  </footer>
+
+</div>
+
+<script>
+  // Crossword navigation: auto-advance to next cell on input
+  document.querySelectorAll('.crossword-cell input').forEach(input => {
+    input.addEventListener('input', (e) => {
+      if (e.target.value.length === 1) {
+        const cell = e.target.closest('.crossword-cell');
+        let next = cell.nextElementSibling;
+        while (next && next.classList.contains('black')) {
+          next = next.nextElementSibling;
+        }
+        if (next) {
+          const nextInput = next.querySelector('input');
+          if (nextInput) nextInput.focus();
+        }
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && e.target.value === '') {
+        const cell = e.target.closest('.crossword-cell');
+        let prev = cell.previousElementSibling;
+        while (prev && prev.classList.contains('black')) {
+          prev = prev.previousElementSibling;
+        }
+        if (prev) {
+          const prevInput = prev.querySelector('input');
+          if (prevInput) {
+            prevInput.focus();
+            prevInput.value = '';
+          }
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
