@@ -122,6 +122,54 @@ MOTIVATIONAL_QUOTES = [
     "Ogni giorno porta con sé nuove possibilità.",
 ]
 
+# ─── Fallback crossword ───────────────────────────────────────────────────────
+# Used when Claude's crossword fails validation.
+# Layout: PANE across row 1 (cols 0-3), LANA down col 1 (rows 0-3),
+#         EURO down col 3 (rows 1-4). Intersections: A@(1,1) E@(1,3).
+FALLBACK_CROSSWORD = {
+    "rows": 5,
+    "cols": 5,
+    "cells": [
+        # Row 0
+        {"row": 0, "col": 0, "black": True,  "number": None},
+        {"row": 0, "col": 1, "black": False, "number": 1},
+        {"row": 0, "col": 2, "black": True,  "number": None},
+        {"row": 0, "col": 3, "black": True,  "number": None},
+        {"row": 0, "col": 4, "black": True,  "number": None},
+        # Row 1  P  A  N  E
+        {"row": 1, "col": 0, "black": False, "number": 2},
+        {"row": 1, "col": 1, "black": False, "number": None},
+        {"row": 1, "col": 2, "black": False, "number": None},
+        {"row": 1, "col": 3, "black": False, "number": 3},
+        {"row": 1, "col": 4, "black": True,  "number": None},
+        # Row 2
+        {"row": 2, "col": 0, "black": True,  "number": None},
+        {"row": 2, "col": 1, "black": False, "number": None},
+        {"row": 2, "col": 2, "black": True,  "number": None},
+        {"row": 2, "col": 3, "black": False, "number": None},
+        {"row": 2, "col": 4, "black": True,  "number": None},
+        # Row 3
+        {"row": 3, "col": 0, "black": True,  "number": None},
+        {"row": 3, "col": 1, "black": False, "number": None},
+        {"row": 3, "col": 2, "black": True,  "number": None},
+        {"row": 3, "col": 3, "black": False, "number": None},
+        {"row": 3, "col": 4, "black": True,  "number": None},
+        # Row 4
+        {"row": 4, "col": 0, "black": True,  "number": None},
+        {"row": 4, "col": 1, "black": True,  "number": None},
+        {"row": 4, "col": 2, "black": True,  "number": None},
+        {"row": 4, "col": 3, "black": False, "number": None},
+        {"row": 4, "col": 4, "black": True,  "number": None},
+    ],
+    "across_clues": [
+        {"number": 2, "clue": "Il cibo di base, fatto con farina e acqua", "letters": 4},
+    ],
+    "down_clues": [
+        {"number": 1, "clue": "Il pelo delle pecore, usato per i maglioni", "letters": 4},
+        {"number": 3, "clue": "La moneta ufficiale dell'Italia", "letters": 4},
+    ],
+}
+
 
 # ─── Utilities ────────────────────────────────────────────────────────────────
 
@@ -396,17 +444,24 @@ e.g. class='parola' not class="parola". Double quotes inside JSON strings break 
   "storie_source_url_2": "URL from RSS for second story, or empty string",
 
   "crossword": {
+    "words": [
+      {"word": "PANE", "row": 1, "col": 0, "direction": "across"},
+      {"word": "LANA", "row": 0, "col": 1, "direction": "down"},
+      {"word": "EURO", "row": 1, "col": 3, "direction": "down"}
+    ],
     "rows": 5,
     "cols": 5,
     "cells": [
-      {"row": 0, "col": 0, "black": false, "number": 1},
-      {"row": 0, "col": 1, "black": false, "number": null}
+      {"row": 0, "col": 0, "black": true,  "number": null},
+      {"row": 0, "col": 1, "black": false, "number": 1},
+      "... all 25 cells ..."
     ],
     "across_clues": [
-      {"number": 1, "clue": "Simple Italian clue (beginner level)", "letters": 4}
+      {"number": 2, "clue": "Il cibo fatto con farina", "letters": 4}
     ],
     "down_clues": [
-      {"number": 1, "clue": "Simple Italian clue (beginner level)", "letters": 3}
+      {"number": 1, "clue": "Pelo delle pecore", "letters": 4},
+      {"number": 3, "clue": "Moneta europea", "letters": 4}
     ]
   },
 
@@ -423,16 +478,31 @@ RULES:
 1. HTML attributes inside JSON strings: ALWAYS use single quotes (class='x' not class="x").
 2. The parola span: embed naturally in one section body — not forced, not labeled.
 3. portogallo_quiet: false ONLY if there is genuinely important Portugal news in the RSS. Default true.
-4. CROSSWORD — BEGINNER LEVEL ONLY:
-   - Use ONLY very common A1-A2 Italian words: CASA, MARE, SOLE, PANE, GATTO, CANE,
-     VINO, LUCE, ARIA, VITA, ROSA, LUNA, MANO, NASO, DITO, etc.
-   - Words must be exactly 3, 4, or 5 letters. Never longer.
-   - Clues must be extremely simple and obvious. Example: "Dove abitiamo" for CASA,
-     "Il contrario di notte" for GIORNO, "La bevanda italiana preferita" for VINO.
-   - Grid is 5x5 (25 cells total, rows 0-4, cols 0-4).
-   - Pick 3-4 short words with at least one intersection point.
-   - List ALL 25 cells. Every cell needs row, col, black (true/false), number (int or null).
-   - Black cells should be symmetric and tasteful — not random.
+4. CROSSWORD — follow this EXACT four-step process:
+
+   STEP 1 — Choose 3 simple Italian words (3–4 letters, A1-A2 only):
+     Valid word pool: CASA, MARE, SOLE, PANE, VINO, GATTO, CANE, LUCE, ARIA,
+     VITA, ROSA, LUNA, MANO, NASO, DITO, LANA, EURO, BENE, MESE, LAGO, etc.
+     Pick 3 words that share at least one letter somewhere in their spelling.
+
+   STEP 2 — Place the words on a 5×5 grid so they INTERSECT correctly:
+     At every intersection cell, the letter from the ACROSS word at that position
+     MUST be IDENTICAL to the letter from the DOWN word at that position.
+     Verify this by writing out each word letter-by-letter with its (row, col).
+     Example: PANE across row 1 → P(1,0) A(1,1) N(1,2) E(1,3)
+              LANA down  col 1 → L(0,1) A(1,1) N(2,1) A(3,1)
+              Intersection at (1,1): PANE[1]='A', LANA[1]='A' ✓
+
+   STEP 3 — Fill ALL 25 cells (rows 0-4, cols 0-4):
+     A cell is WHITE if any word passes through it; otherwise BLACK.
+     Assign a number to a cell ONLY if it starts an across word (nothing white to its
+     left AND the word runs ≥2 cells right) OR a down word (nothing white above it AND
+     the word runs ≥2 cells down). Numbers are sequential: 1, 2, 3 …
+     Output the "words" array first, then all 25 cells.
+
+   STEP 4 — Write clues using the EXACT words from Step 1:
+     The "letters" value must equal the exact length of that word.
+     Clues must be simple and obvious (e.g. "Dove abitiamo" for CASA).
 5. ANAGRAM — use 3 or 4 simple Italian words (3-5 letters) drawn from the articles above.
    Scramble each word's letters randomly. Answers must be real Italian A1-A2 words.
 6. Numbers (prices, temperatures, wave heights) must match the raw data above exactly.
@@ -501,6 +571,87 @@ def render_crossword_html(crossword: dict) -> str:
     lines.append("</div>")
 
     return "\n".join(lines)
+
+
+# ─── Crossword validator ──────────────────────────────────────────────────────
+
+def validate_crossword(crossword: dict) -> tuple[bool, str]:
+    """
+    Check that every clue's (number, letters, direction) is consistent with the grid.
+    Returns (True, "") on success or (False, reason) on first failure.
+
+    A clue with number N and letters L is valid when:
+      - A cell with number=N exists in the cells list.
+      - There are exactly L consecutive non-black cells going in the clue's direction
+        starting from that cell.
+    """
+    rows = crossword.get("rows", 5)
+    cols = crossword.get("cols", 5)
+    cells_data = crossword.get("cells", [])
+
+    if not cells_data:
+        return False, "no cells in crossword"
+
+    # Build lookup: (row, col) -> cell dict
+    cell_map: dict = {}
+    for cell in cells_data:
+        r = cell.get("row")
+        c = cell.get("col")
+        if r is not None and c is not None:
+            cell_map[(r, c)] = cell
+
+    # Build lookup: number -> (row, col)
+    number_pos: dict = {}
+    for (r, c), cell in cell_map.items():
+        num = cell.get("number")
+        if num is not None:
+            number_pos[int(num)] = (r, c)
+
+    def run_length(r: int, c: int, dr: int, dc: int) -> int:
+        """Count consecutive non-black cells from (r,c) in direction (dr,dc)."""
+        length = 0
+        while 0 <= r < rows and 0 <= c < cols:
+            cell = cell_map.get((r, c), {"black": True})
+            if cell.get("black", True):
+                break
+            length += 1
+            r += dr
+            c += dc
+        return length
+
+    for clue in crossword.get("across_clues", []):
+        num = int(clue.get("number", 0))
+        expected = int(clue.get("letters", 0))
+        if num not in number_pos:
+            return False, f"across clue {num}: no cell has this number"
+        r, c = number_pos[num]
+        actual = run_length(r, c, 0, 1)
+        if actual != expected:
+            return False, (
+                f"across clue {num}: grid has {actual} white cells going right "
+                f"from ({r},{c}), but clue says {expected} letters"
+            )
+
+    for clue in crossword.get("down_clues", []):
+        num = int(clue.get("number", 0))
+        expected = int(clue.get("letters", 0))
+        if num not in number_pos:
+            return False, f"down clue {num}: no cell has this number"
+        r, c = number_pos[num]
+        actual = run_length(r, c, 1, 0)
+        if actual != expected:
+            return False, (
+                f"down clue {num}: grid has {actual} white cells going down "
+                f"from ({r},{c}), but clue says {expected} letters"
+            )
+
+    # Must have at least one across and one down clue
+    if not crossword.get("across_clues"):
+        return False, "no across clues"
+    if not crossword.get("down_clues"):
+        return False, "no down clues"
+
+    return True, ""
 
 
 # ─── Anagram renderer ─────────────────────────────────────────────────────────
@@ -692,8 +843,13 @@ def main():
         headline = data.get("portogallo_headline", "")
         portugal_status_html = f'<div class="section-headline">{headline}</div>'
 
-    # Crossword HTML
-    crossword_html = render_crossword_html(data.get("crossword", {}))
+    # Crossword HTML — validate before rendering; fall back to hardcoded if broken
+    crossword_data = data.get("crossword", {})
+    valid, reason = validate_crossword(crossword_data)
+    if not valid:
+        print(f"  [warn] Crossword validation failed: {reason}. Using fallback.", file=sys.stderr)
+        crossword_data = FALLBACK_CROSSWORD
+    crossword_html = render_crossword_html(crossword_data)
 
     # Anagram HTML
     anagram_html = render_anagram_html(data.get("anagram", []))
