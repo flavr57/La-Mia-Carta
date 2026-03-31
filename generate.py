@@ -16,6 +16,7 @@ import sys
 import json
 import re
 import datetime
+import time
 
 import requests
 import feedparser
@@ -123,43 +124,43 @@ MOTIVATIONAL_QUOTES = [
 ]
 
 # ─── Fallback crossword ───────────────────────────────────────────────────────
-# Used when Claude's crossword fails validation.
-# Layout: PANE across row 1 (cols 0-3), LANA down col 1 (rows 0-3),
-#         EURO down col 3 (rows 1-4). Intersections: A@(1,1) E@(1,3).
+# Used when build_crossword_grid() fails after all attempts.
+# Layout: PANE across row 1, LANA down col 1, EURO down col 3.
+# Intersections: A@(1,1), E@(1,3).
 FALLBACK_CROSSWORD = {
+    "words": [
+        {"word": "PANE", "clue": "Il cibo di base",         "row": 1, "col": 0, "direction": "across"},
+        {"word": "LANA", "clue": "Il pelo delle pecore",    "row": 0, "col": 1, "direction": "down"},
+        {"word": "EURO", "clue": "La moneta dell'Italia",   "row": 1, "col": 3, "direction": "down"},
+    ],
     "rows": 5,
     "cols": 5,
     "cells": [
-        # Row 0
-        {"row": 0, "col": 0, "black": True,  "number": None},
-        {"row": 0, "col": 1, "black": False, "number": 1},
-        {"row": 0, "col": 2, "black": True,  "number": None},
-        {"row": 0, "col": 3, "black": True,  "number": None},
-        {"row": 0, "col": 4, "black": True,  "number": None},
-        # Row 1  P  A  N  E
-        {"row": 1, "col": 0, "black": False, "number": 2},
-        {"row": 1, "col": 1, "black": False, "number": None},
-        {"row": 1, "col": 2, "black": False, "number": None},
-        {"row": 1, "col": 3, "black": False, "number": 3},
-        {"row": 1, "col": 4, "black": True,  "number": None},
-        # Row 2
-        {"row": 2, "col": 0, "black": True,  "number": None},
-        {"row": 2, "col": 1, "black": False, "number": None},
-        {"row": 2, "col": 2, "black": True,  "number": None},
-        {"row": 2, "col": 3, "black": False, "number": None},
-        {"row": 2, "col": 4, "black": True,  "number": None},
-        # Row 3
-        {"row": 3, "col": 0, "black": True,  "number": None},
-        {"row": 3, "col": 1, "black": False, "number": None},
-        {"row": 3, "col": 2, "black": True,  "number": None},
-        {"row": 3, "col": 3, "black": False, "number": None},
-        {"row": 3, "col": 4, "black": True,  "number": None},
-        # Row 4
-        {"row": 4, "col": 0, "black": True,  "number": None},
-        {"row": 4, "col": 1, "black": True,  "number": None},
-        {"row": 4, "col": 2, "black": True,  "number": None},
-        {"row": 4, "col": 3, "black": False, "number": None},
-        {"row": 4, "col": 4, "black": True,  "number": None},
+        {"row": 0, "col": 0, "black": True,  "number": None, "letter": ""},
+        {"row": 0, "col": 1, "black": False, "number": 1,    "letter": "L"},
+        {"row": 0, "col": 2, "black": True,  "number": None, "letter": ""},
+        {"row": 0, "col": 3, "black": True,  "number": None, "letter": ""},
+        {"row": 0, "col": 4, "black": True,  "number": None, "letter": ""},
+        {"row": 1, "col": 0, "black": False, "number": 2,    "letter": "P"},
+        {"row": 1, "col": 1, "black": False, "number": None, "letter": "A"},
+        {"row": 1, "col": 2, "black": False, "number": None, "letter": "N"},
+        {"row": 1, "col": 3, "black": False, "number": 3,    "letter": "E"},
+        {"row": 1, "col": 4, "black": True,  "number": None, "letter": ""},
+        {"row": 2, "col": 0, "black": True,  "number": None, "letter": ""},
+        {"row": 2, "col": 1, "black": False, "number": None, "letter": "N"},
+        {"row": 2, "col": 2, "black": True,  "number": None, "letter": ""},
+        {"row": 2, "col": 3, "black": False, "number": None, "letter": "U"},
+        {"row": 2, "col": 4, "black": True,  "number": None, "letter": ""},
+        {"row": 3, "col": 0, "black": True,  "number": None, "letter": ""},
+        {"row": 3, "col": 1, "black": False, "number": None, "letter": "A"},
+        {"row": 3, "col": 2, "black": True,  "number": None, "letter": ""},
+        {"row": 3, "col": 3, "black": False, "number": None, "letter": "R"},
+        {"row": 3, "col": 4, "black": True,  "number": None, "letter": ""},
+        {"row": 4, "col": 0, "black": True,  "number": None, "letter": ""},
+        {"row": 4, "col": 1, "black": True,  "number": None, "letter": ""},
+        {"row": 4, "col": 2, "black": True,  "number": None, "letter": ""},
+        {"row": 4, "col": 3, "black": False, "number": None, "letter": "O"},
+        {"row": 4, "col": 4, "black": True,  "number": None, "letter": ""},
     ],
     "across_clues": [
         {"number": 2, "clue": "Il cibo di base, fatto con farina e acqua", "letters": 4},
@@ -331,7 +332,19 @@ Write ALL content in A2-level Italian: simple vocabulary, short sentences, prese
 tense preferred, passato prossimo for past events. No subjunctive. Newspaper editorial \
 tone — NOT a language-learning app. Do not mention that this is A2 level anywhere.
 
-TODAY: {date_str} (Month: {today_date.month}, Day: {today_date.day}, Year: {today_date.year})
+═══════════════════════════════════════════════════════
+TODAY'S DATE: {date_str} ({today_date.year}-{today_date.month:02d}-{today_date.day:02d})
+THIS IS A UNIQUE DAILY EDITION.
+DO NOT reuse headlines, story angles, topics, or article ideas from any previous day.
+Treat this edition as completely new and independent.
+═══════════════════════════════════════════════════════
+
+CONTENT QUALITY RULES — write like a real journalist:
+- Use specific names: real cities, real people, real companies from the RSS data below.
+- Cite actual facts and details from the RSS summaries (numbers, locations, events).
+- Avoid generic filler phrases like "gli esperti dicono", "negli ultimi anni", "è importante".
+- Base every article closely on actual RSS content — do NOT invent generic stories.
+- Every paragraph must contain at least one specific, verifiable detail from the RSS.
 
 RAW DATA — use this to write accurate content:
 
@@ -443,32 +456,27 @@ e.g. class='parola' not class="parola". Double quotes inside JSON strings break 
   "storie_source_2": "Publication name only",
   "storie_source_url_2": "URL from RSS for second story, or empty string",
 
-  "crossword": {
-    "words": [
-      {"word": "PANE", "row": 1, "col": 0, "direction": "across"},
-      {"word": "LANA", "row": 0, "col": 1, "direction": "down"},
-      {"word": "EURO", "row": 1, "col": 3, "direction": "down"}
-    ],
-    "rows": 5,
-    "cols": 5,
-    "cells": [
-      {"row": 0, "col": 0, "black": true,  "number": null},
-      {"row": 0, "col": 1, "black": false, "number": 1},
-      "... all 25 cells ..."
-    ],
-    "across_clues": [
-      {"number": 2, "clue": "Il cibo fatto con farina", "letters": 4}
-    ],
-    "down_clues": [
-      {"number": 1, "clue": "Pelo delle pecore", "letters": 4},
-      {"number": 3, "clue": "Moneta europea", "letters": 4}
-    ]
-  },
+  "crossword_words": [
+    {"word": "CASA",  "clue": "Dove abitiamo"},
+    {"word": "SOLE",  "clue": "La stella che scalda la Terra"},
+    {"word": "MARE",  "clue": "Grande acqua salata"},
+    {"word": "PANE",  "clue": "Il cibo fatto con farina"},
+    {"word": "VINO",  "clue": "Bevanda italiana famosa nel mondo"},
+    {"word": "CANE",  "clue": "Animale domestico fedele"},
+    {"word": "ARIA",  "clue": "Quello che respiriamo"},
+    {"word": "MANO",  "clue": "Parte del corpo per toccare"},
+    {"word": "LUNA",  "clue": "Il satellite naturale della Terra"},
+    {"word": "ROSA",  "clue": "Fiore romantico, spesso rosso"},
+    {"word": "BENE",  "clue": "Come stai? Sto ..."},
+    {"word": "SALE",  "clue": "Condimento bianco per il cibo"}
+  ],
 
   "anagram": [
     {"scrambled": "ACAS", "answer": "CASA"},
     {"scrambled": "EARM", "answer": "MARE"},
-    {"scrambled": "LEOS", "answer": "SOLE"}
+    {"scrambled": "LEOS", "answer": "SOLE"},
+    {"scrambled": "ENAP", "answer": "PANE"},
+    {"scrambled": "URAI", "answer": "ARIA"}
   ],
 
   "footer_quote": "A famous motivational Italian quote. Inspiring, uplifting tone. In Italian only."
@@ -478,33 +486,20 @@ RULES:
 1. HTML attributes inside JSON strings: ALWAYS use single quotes (class='x' not class="x").
 2. The parola span: embed naturally in one section body — not forced, not labeled.
 3. portogallo_quiet: false ONLY if there is genuinely important Portugal news in the RSS. Default true.
-4. CROSSWORD — follow this EXACT four-step process:
-
-   STEP 1 — Choose 3 simple Italian words (3–4 letters, A1-A2 only):
-     Valid word pool: CASA, MARE, SOLE, PANE, VINO, GATTO, CANE, LUCE, ARIA,
-     VITA, ROSA, LUNA, MANO, NASO, DITO, LANA, EURO, BENE, MESE, LAGO, etc.
-     Pick 3 words that share at least one letter somewhere in their spelling.
-
-   STEP 2 — Place the words on a 5×5 grid so they INTERSECT correctly:
-     At every intersection cell, the letter from the ACROSS word at that position
-     MUST be IDENTICAL to the letter from the DOWN word at that position.
-     Verify this by writing out each word letter-by-letter with its (row, col).
-     Example: PANE across row 1 → P(1,0) A(1,1) N(1,2) E(1,3)
-              LANA down  col 1 → L(0,1) A(1,1) N(2,1) A(3,1)
-              Intersection at (1,1): PANE[1]='A', LANA[1]='A' ✓
-
-   STEP 3 — Fill ALL 25 cells (rows 0-4, cols 0-4):
-     A cell is WHITE if any word passes through it; otherwise BLACK.
-     Assign a number to a cell ONLY if it starts an across word (nothing white to its
-     left AND the word runs ≥2 cells right) OR a down word (nothing white above it AND
-     the word runs ≥2 cells down). Numbers are sequential: 1, 2, 3 …
-     Output the "words" array first, then all 25 cells.
-
-   STEP 4 — Write clues using the EXACT words from Step 1:
-     The "letters" value must equal the exact length of that word.
-     Clues must be simple and obvious (e.g. "Dove abitiamo" for CASA).
-5. ANAGRAM — use 3 or 4 simple Italian words (3-5 letters) drawn from the articles above.
-   Scramble each word's letters randomly. Answers must be real Italian A1-A2 words.
+4. CROSSWORD — provide AT LEAST 12 Italian words in "crossword_words". Rules:
+   - Words: A1-A2 level, 3-6 letters, ALL CAPS, ASCII only (no accents, no spaces).
+   - Choose words with common vowels (A, E, O, I) so they can intersect.
+   - Good pool: CASA, MARE, SOLE, PANE, VINO, GATTO, CANE, LUCE, ARIA, VITA, ROSA,
+     LUNA, MANO, NASO, DITO, LANA, EURO, BENE, MESE, LAGO, SALE, SERA, BARCA,
+     FIORE, VERDE, ROSSO, BUONO, DOLCE, FORTE, NUOVO, PORTA, LIBRO, TRENO, ORSO.
+   - Clues: simple Italian, 4-8 words, obvious meaning. No subjunctive.
+   - DO NOT include a grid — Python builds the grid automatically from the words.
+5. ANAGRAM — provide EXACTLY 5 words. Rules:
+   - Words MUST come from today's articles content above (city names, topic words,
+     action words, things mentioned in the news). NOT hardcoded words.
+   - 3-6 letters, A1-A2 Italian words only, no accents.
+   - Scramble so letter order is DIFFERENT from original (scrambled ≠ answer).
+   - Never use the same words as previous editions — pick fresh words from today.
 6. Numbers (prices, temperatures, wave heights) must match the raw data above exactly.
 7. Source URLs: copy them EXACTLY from the RSS data above. Do not invent or modify URLs.
    If no URL is available for a section, use an empty string "".
@@ -517,8 +512,8 @@ RULES:
 # ─── Crossword renderer ───────────────────────────────────────────────────────
 
 def render_crossword_html(crossword: dict) -> str:
-    rows = crossword.get("rows", 5)
-    cols = crossword.get("cols", 5)
+    rows = crossword.get("rows", 8)
+    cols = crossword.get("cols", 8)
     cells_data = crossword.get("cells", [])
 
     # Build 2D grid (default all black)
@@ -528,18 +523,22 @@ def render_crossword_html(crossword: dict) -> str:
         if 0 <= r < rows and 0 <= c < cols:
             grid[r][c] = cell
 
-    lines = [f'<div class="crossword-grid" style="grid-template-columns: repeat({cols}, 36px);">']
+    # Cell pixel size: shrink slightly for wider grids
+    cell_px = 34 if cols <= 10 else 30
+
+    lines = [f'<div class="crossword-grid" style="grid-template-columns: repeat({cols}, {cell_px}px);">']
     for r in range(rows):
-        lines.append(f"  <!-- Row {r + 1} -->")
         for c in range(cols):
             cell = grid[r][c]
             if cell.get("black", True):
-                lines.append('  <div class="crossword-cell black"></div>')
+                lines.append(f'  <div class="crossword-cell black" style="width:{cell_px}px;height:{cell_px}px;"></div>')
             else:
                 number = cell.get("number")
+                letter = cell.get("letter", "")
                 num_html = f'<span class="cell-number">{number}</span>' if number else ""
                 lines.append(
-                    f'  <div class="crossword-cell">'
+                    f'  <div class="crossword-cell" data-answer="{letter}"'
+                    f' style="width:{cell_px}px;height:{cell_px}px;">'
                     f'{num_html}'
                     f'<input maxlength="1" data-row="{r}" data-col="{c}">'
                     f"</div>"
@@ -556,7 +555,7 @@ def render_crossword_html(crossword: dict) -> str:
         num = clue.get("number", "")
         txt = clue.get("clue", "")
         let = clue.get("letters", "")
-        suffix = f" ({let} lettere)" if let else ""
+        suffix = f" ({let})" if let else ""
         lines.append(f'    <div class="clue"><strong>{num}.</strong> {txt}{suffix}</div>')
     lines.append("  </div>")
     lines.append("  <div>")
@@ -565,10 +564,15 @@ def render_crossword_html(crossword: dict) -> str:
         num = clue.get("number", "")
         txt = clue.get("clue", "")
         let = clue.get("letters", "")
-        suffix = f" ({let} lettere)" if let else ""
+        suffix = f" ({let})" if let else ""
         lines.append(f'    <div class="clue"><strong>{num}.</strong> {txt}{suffix}</div>')
     lines.append("  </div>")
     lines.append("</div>")
+
+    lines.append('<div class="crossword-btn-row">')
+    lines.append('  <button class="crossword-check-btn" onclick="checkCrossword()">Controlla</button>')
+    lines.append('  <button class="crossword-reveal-btn" onclick="revealCrossword()">Mostra soluzioni</button>')
+    lines.append('</div>')
 
     return "\n".join(lines)
 
@@ -652,6 +656,172 @@ def validate_crossword(crossword: dict) -> tuple[bool, str]:
         return False, "no down clues"
 
     return True, ""
+
+
+# ─── Crossword grid builder ──────────────────────────────────────────────────
+
+def build_crossword_grid(word_clue_pairs: list, attempts: int = 8) -> dict | None:
+    """
+    Place word+clue pairs into a crossword grid using letter intersections.
+    Returns a crossword dict (rows, cols, cells, words, across_clues, down_clues)
+    or None if placement fails after all attempts.
+    """
+    import random as _rnd
+
+    # Filter: uppercase ASCII only, 3-6 letters
+    clean = []
+    for pair in word_clue_pairs:
+        w = pair.get("word", "").strip().upper()
+        clue = pair.get("clue", "").strip()
+        if 3 <= len(w) <= 6 and w.isalpha() and all(ord(c) < 128 for c in w):
+            clean.append((w, clue))
+    if len(clean) < 6:
+        return None
+
+    # Sort by length descending; longer words anchor better
+    clean.sort(key=lambda x: len(x[0]), reverse=True)
+
+    G = 18  # internal grid size
+
+    for _attempt in range(attempts):
+        grid: dict = {}      # (r, c) -> letter
+        placed: list = []    # dicts: word, clue, row, col, direction
+
+        def can_place(word, row, col, direction):
+            dr, dc = (1, 0) if direction == "down" else (0, 1)
+            end_r = row + dr * (len(word) - 1)
+            end_c = col + dc * (len(word) - 1)
+            if end_r >= G or end_c >= G or row < 0 or col < 0:
+                return False
+            # Cell immediately before start must be empty
+            if 0 <= row - dr < G and 0 <= col - dc < G:
+                if (row - dr, col - dc) in grid:
+                    return False
+            # Cell immediately after end must be empty
+            if 0 <= row + dr * len(word) < G and 0 <= col + dc * len(word) < G:
+                if (row + dr * len(word), col + dc * len(word)) in grid:
+                    return False
+            intersections = 0
+            for i, letter in enumerate(word):
+                r, c = row + dr * i, col + dc * i
+                if (r, c) in grid:
+                    if grid[(r, c)] != letter:
+                        return False
+                    intersections += 1
+                else:
+                    # Perpendicular neighbors of new cells must be empty
+                    # (prevents unwanted parallel adjacency)
+                    if direction == "across":
+                        if (r - 1, c) in grid or (r + 1, c) in grid:
+                            return False
+                    else:
+                        if (r, c - 1) in grid or (r, c + 1) in grid:
+                            return False
+            return len(placed) == 0 or intersections > 0
+
+        def do_place(word, row, col, direction, clue):
+            dr, dc = (1, 0) if direction == "down" else (0, 1)
+            for i, letter in enumerate(word):
+                grid[(row + dr * i, col + dc * i)] = letter
+            placed.append({"word": word, "clue": clue,
+                            "row": row, "col": col, "direction": direction})
+
+        # Place first word horizontally in centre
+        fw, fc = clean[0]
+        do_place(fw, G // 2, (G - len(fw)) // 2, "across", fc)
+
+        # Shuffle remaining words for variety across attempts
+        remaining = list(clean[1:])
+        _rnd.shuffle(remaining)
+
+        for word, clue in remaining:
+            options = []
+            for p in placed:
+                new_dir = "down" if p["direction"] == "across" else "across"
+                for i, nl in enumerate(word):
+                    for j, pl in enumerate(p["word"]):
+                        if nl == pl:
+                            if p["direction"] == "across":
+                                row = p["row"] - i
+                                col = p["col"] + j
+                            else:
+                                row = p["row"] + j
+                                col = p["col"] - i
+                            if can_place(word, row, col, new_dir):
+                                options.append((row, col, new_dir))
+            if options:
+                row, col, direction = _rnd.choice(options)
+                do_place(word, row, col, direction, clue)
+
+        if len(placed) < min(10, len(clean)):
+            continue  # try again
+
+        # Compute tight bounding box
+        all_r = [p["row"] for p in placed] + \
+                [p["row"] + len(p["word"]) - 1 for p in placed if p["direction"] == "down"]
+        all_c = [p["col"] for p in placed] + \
+                [p["col"] + len(p["word"]) - 1 for p in placed if p["direction"] == "across"]
+        min_r, max_r = min(all_r), max(all_r)
+        min_c, max_c = min(all_c), max(all_c)
+
+        # Remap coordinates to (0,0) origin
+        new_grid = {(r - min_r, c - min_c): letter for (r, c), letter in grid.items()}
+        for p in placed:
+            p["row"] -= min_r
+            p["col"] -= min_c
+        grid = new_grid
+        rows = max_r - min_r + 1
+        cols = max_c - min_c + 1
+
+        # Assign numbers left-to-right, top-to-bottom
+        number_map: dict = {}
+        num = 1
+        for r in range(rows):
+            for c in range(cols):
+                if (r, c) not in grid:
+                    continue
+                starts_across = ((c == 0 or (r, c - 1) not in grid)
+                                 and (r, c + 1) in grid)
+                starts_down = ((r == 0 or (r - 1, c) not in grid)
+                               and (r + 1, c) in grid)
+                if starts_across or starts_down:
+                    number_map[(r, c)] = num
+                    num += 1
+
+        # Build cells list (includes letter for data-answer)
+        cells = []
+        for r in range(rows):
+            for c in range(cols):
+                is_black = (r, c) not in grid
+                cells.append({
+                    "row": r, "col": c,
+                    "black": is_black,
+                    "number": number_map.get((r, c)) if not is_black else None,
+                    "letter": grid.get((r, c), ""),
+                })
+
+        # Build clue lists
+        across_clues, down_clues = [], []
+        for p in placed:
+            num_val = number_map.get((p["row"], p["col"]))
+            if num_val is None:
+                continue
+            entry = {"number": num_val, "clue": p["clue"], "letters": len(p["word"])}
+            (across_clues if p["direction"] == "across" else down_clues).append(entry)
+        across_clues.sort(key=lambda x: x["number"])
+        down_clues.sort(key=lambda x: x["number"])
+
+        if across_clues and down_clues:
+            return {
+                "words": placed,
+                "rows": rows,
+                "cols": cols,
+                "cells": cells,
+                "across_clues": across_clues,
+                "down_clues": down_clues,
+            }
+
+    return None  # all attempts failed
 
 
 # ─── Anagram renderer ─────────────────────────────────────────────────────────
@@ -781,11 +951,21 @@ def main():
 
     prompt = build_prompt(date_str, today, weather_hermosa, weather_lisbon, waves, markets, news)
 
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=8192,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    response = None
+    for attempt in range(1, 4):
+        try:
+            response = client.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=8192,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            break
+        except anthropic.APIStatusError as e:
+            if e.status_code == 529 and attempt < 3:
+                print(f"  API overloaded (attempt {attempt}/3), retrying in 30s...")
+                time.sleep(30)
+            else:
+                raise
 
     raw = response.content[0].text.strip()
 
@@ -843,12 +1023,21 @@ def main():
         headline = data.get("portogallo_headline", "")
         portugal_status_html = f'<div class="section-headline">{headline}</div>'
 
-    # Crossword HTML — validate before rendering; fall back to hardcoded if broken
-    crossword_data = data.get("crossword", {})
-    valid, reason = validate_crossword(crossword_data)
-    if not valid:
-        print(f"  [warn] Crossword validation failed: {reason}. Using fallback.", file=sys.stderr)
+    # Crossword HTML — build grid from Claude's word list; fall back if placement fails
+    crossword_words = data.get("crossword_words", [])
+    crossword_data = None
+    if crossword_words:
+        print(f"  Building crossword grid from {len(crossword_words)} words...")
+        crossword_data = build_crossword_grid(crossword_words)
+        if crossword_data is None:
+            print("  [warn] Crossword placement failed after all attempts. Using fallback.", file=sys.stderr)
+    else:
+        print("  [warn] No crossword_words in Claude response. Using fallback.", file=sys.stderr)
+    if crossword_data is None:
         crossword_data = FALLBACK_CROSSWORD
+    else:
+        print(f"  Crossword: {len(crossword_data['words'])} words placed on "
+              f"{crossword_data['rows']}x{crossword_data['cols']} grid.")
     crossword_html = render_crossword_html(crossword_data)
 
     # Anagram HTML
