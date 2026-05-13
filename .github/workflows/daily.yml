@@ -2,9 +2,9 @@ name: La Mia Carta — Edizione Quotidiana
 
 on:
   schedule:
-    # 6am PDT (UTC-7) = 13:00 UTC — runs year-round at this time
-    # During PST (winter) this fires at 5am; adjust to 14:00 UTC if preferred
-    - cron: '0 13 * * *'
+    # 3:00am PDT (UTC-7) = 10:00 UTC — extra buffer for runner delays before 6am
+    # During PST (UTC-8) this fires at 2:00am local time
+    - cron: '0 10 * * *'
   workflow_dispatch:  # allow manual run from Actions tab
 
 jobs:
@@ -26,10 +26,23 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Smoke-test Claude Code CLI
+        env:
+          RAW_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          export CLAUDE_CODE_OAUTH_TOKEN="$(printf '%s' "$RAW_TOKEN" | tr -d '[:space:]')"
+          claude --version
+          echo 'Reply with exactly the word OK.' | claude -p --model claude-sonnet-4-6 --output-format text
+
       - name: Generate today's newspaper
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python generate.py
+          RAW_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          export CLAUDE_CODE_OAUTH_TOKEN="$(printf '%s' "$RAW_TOKEN" | tr -d '[:space:]')"
+          python generate.py
 
       - name: Commit and push index.html
         run: |
