@@ -955,38 +955,54 @@ def main():
     raw = None
     for attempt in range(1, max_attempts + 1):
         try:
-            result = subprocess.run(
+            proc = subprocess.Popen(
                 ["claude", "-p",
                  "--model", "claude-sonnet-4-6",
                  "--fallback-model", "claude-opus-4-7",
                  "--tools", "",
                  "--permission-mode", "bypassPermissions",
+                 "--debug", "api",
                  "--output-format", "text"],
-                input=prompt,
-                capture_output=True,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                timeout=120,
-                check=True,
             )
-            raw = result.stdout.strip()
+            try:
+                stdout, stderr = proc.communicate(input=prompt, timeout=120)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                # Drain whatever the CLI has produced so far
+                try:
+                    stdout, stderr = proc.communicate(timeout=10)
+                except subprocess.TimeoutExpired:
+                    stdout, stderr = "", ""
+                print(f"  [warn] claude CLI timed out (attempt {attempt}/{max_attempts}).", file=sys.stderr)
+                print(f"  [partial stdout] {(stdout or '<empty>')[-2000:]}", file=sys.stderr)
+                print(f"  [partial stderr] {(stderr or '<empty>')[-2000:]}", file=sys.stderr)
+                if attempt < max_attempts:
+                    print(f"  Retrying in {retry_wait}s...", file=sys.stderr)
+                    time.sleep(retry_wait)
+                    continue
+                else:
+                    print("ERROR: claude CLI timed out after all retries", file=sys.stderr)
+                    sys.exit(1)
+            if proc.returncode != 0:
+                print(f"  [warn] claude CLI failed (exit {proc.returncode}, attempt {attempt}/{max_attempts})", file=sys.stderr)
+                print(f"  [stdout] {(stdout or '<empty>')[:2000]}", file=sys.stderr)
+                print(f"  [stderr] {(stderr or '<empty>')[-2000:]}", file=sys.stderr)
+                if attempt < max_attempts:
+                    print(f"  Retrying in {retry_wait}s...", file=sys.stderr)
+                    time.sleep(retry_wait)
+                    continue
+                else:
+                    print(f"ERROR: claude CLI failed after {max_attempts} attempts (exit {proc.returncode})", file=sys.stderr)
+                    sys.exit(1)
+            raw = stdout.strip()
             break
-        except subprocess.CalledProcessError as e:
-            print(f"  [warn] claude CLI failed (exit {e.returncode}, attempt {attempt}/{max_attempts})", file=sys.stderr)
-            print(f"  [stdout] {(e.stdout or '<empty>')[:1000]}", file=sys.stderr)
-            print(f"  [stderr] {(e.stderr or '<empty>')[:1000]}", file=sys.stderr)
-            if attempt < max_attempts:
-                print(f"  Retrying in {retry_wait}s...", file=sys.stderr)
-                time.sleep(retry_wait)
-            else:
-                print(f"ERROR: claude CLI failed after {max_attempts} attempts (exit {e.returncode})", file=sys.stderr)
-                sys.exit(1)
-        except subprocess.TimeoutExpired:
-            if attempt < max_attempts:
-                print(f"  [warn] claude CLI timed out (attempt {attempt}/{max_attempts}). Retrying in {retry_wait}s...", file=sys.stderr)
-                time.sleep(retry_wait)
-            else:
-                print("ERROR: claude CLI timed out after all retries", file=sys.stderr)
-                sys.exit(1)
+        except FileNotFoundError:
+            print("ERROR: claude CLI not found on PATH", file=sys.stderr)
+            sys.exit(1)
 
     # Strip markdown code fences if Claude added them
     raw = re.sub(r"^```(?:json)?\s*", "", raw)
