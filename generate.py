@@ -956,11 +956,16 @@ def main():
     for attempt in range(1, max_attempts + 1):
         try:
             result = subprocess.run(
-                ["claude", "-p", "--model", "claude-sonnet-4-6", "--output-format", "text"],
+                ["claude", "-p",
+                 "--model", "claude-sonnet-4-6",
+                 "--fallback-model", "claude-opus-4-7",
+                 "--tools", "",
+                 "--permission-mode", "bypassPermissions",
+                 "--output-format", "text"],
                 input=prompt,
                 capture_output=True,
                 text=True,
-                timeout=300,
+                timeout=120,
                 check=True,
             )
             raw = result.stdout.strip()
